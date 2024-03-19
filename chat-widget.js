@@ -269,11 +269,16 @@ async function injectHTML() {
 
 
 function loadCSS() {
-    let link = document.createElement("link");
-    link.rel = "stylesheet";
-    // If you want to use on Local then replace the following URL with http://localhost:<port>/css/chat.css
-    link.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css";
-    document.head.appendChild(link);
+    let bootstrapLink = document.createElement("link");
+    bootstrapLink.rel = "stylesheet";
+    bootstrapLink.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css";
+
+    let cssLink = document.createElement("link");
+    cssLink.rel = "stylesheet";
+    cssLink.href = "https://alexherrmio.github.io/styles.css";
+
+    document.head.appendChild(cssLink);
+    document.head.appendChild(bootstrapLink);
 }
 
 let typing = false

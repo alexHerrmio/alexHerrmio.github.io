@@ -275,7 +275,7 @@ function loadCSS() {
 
     let cssLink = document.createElement("link");
     cssLink.rel = "stylesheet";
-    cssLink.href = "http://localhost:63342/github-page/style.css";
+    cssLink.href = "https://alexherrmio.github.io/style.css";
 
     document.head.appendChild(bootstrapLink);
     document.head.appendChild(cssLink);

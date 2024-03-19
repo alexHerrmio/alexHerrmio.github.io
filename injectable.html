@@ -1,0 +1,42 @@
+<p class="m-3" id="currentToken"></p>
+
+<div class="position-fixed bottom-0 end-0 p-5" style="max-width: 150px">
+    <div id="chatButton" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+        <button type="button" class="btn btn-primary" style="width: 100%" onclick="openChat()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/></svg>
+        </button>
+    </div>
+</div>
+
+<!--floating chat widget-->
+<div class="position-fixed bottom-0 end-0 p-4" style="z-index: 11">
+    <div id="widget" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/></svg>
+            <h3 class="me-auto" style="color: black;">Web Messaging</h3>
+            <button type="button" class="m-2 btn btn-light btn-sm" onclick="closeChat()">
+                <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><rect fill="none" height="24" width="24"/><path d="M22,3.41l-5.29,5.29L20,12h-8V4l3.29,3.29L20.59,2L22,3.41z M3.41,22l5.29-5.29L12,20v-8H4l3.29,3.29L2,20.59L3.41,22z"/></svg>
+            </button>
+        </div>
+        <div class="progress" style="height: 3px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressbar" role="progressbar"
+                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+        </div>
+        <div class="toast-body">
+            <div id="messages" class="container overflow-auto position-relative"
+                 style="max-height: 40vh; min-height: 40vh"></div>
+            <div class="mt-2 pt-2 border-top d-flex" style="height: 70px">
+                <input id="message" class="m-1 form-control" placeholder="Enter message..."
+                       aria-label="message">
+                <button type="button" class="m-1 btn btn-success btn-sm" id="sendButton"
+                        onclick="wssSend(document.getElementById('message').value)">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+            <div id="imageAttached" hidden>
+                <label id="imageAttachedName" class="m-1"></label>
+                <button type="button" class="m-1 btn-close" aria-label="Close" onclick="fileRemove()"></button>
+            </div>
+        </div>
+    </div>
+</div>

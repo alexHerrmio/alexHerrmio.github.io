@@ -275,10 +275,11 @@ function loadCSS() {
 
     let cssLink = document.createElement("link");
     cssLink.rel = "stylesheet";
-    cssLink.href = "https://alexherrmio.github.io/styles.css";
+    cssLink.href = "http://localhost:63342/github-page/style.css";
 
-    document.head.appendChild(cssLink);
     document.head.appendChild(bootstrapLink);
+    document.head.appendChild(cssLink);
+
 }
 
 let typing = false
@@ -307,15 +308,11 @@ function createCustomerMsg(message) {
     if (!message.startsWith('https://api.' + chatConfigGlobal.region + '/api/v2/downloads/')) {
         let card = document.createElement('div')
         let body = document.createElement('div')
-        let name = document.createElement('h5')
         let text = document.createElement('p')
-        card.className = 'card text-end end-0 m-2 bg-light'
+        card.className = 'card text-end end-0 m-2 bg-primary customer-card'
         body.className = 'card-body'
-        name.className = 'card-title'
-        text.className = 'card-text'
-        name.innerHTML = 'Customer'
+        text.className = 'card-text text-white'
         text.innerHTML = message
-        body.appendChild(name)
         body.appendChild(text)
         card.appendChild(body)
         document.getElementById('messages').appendChild(card)
@@ -329,21 +326,15 @@ function createAgentMsg(from, message, image) {
 
     //Text
     if (!message.startsWith('https://api.' + chatConfigGlobal.region + '/api/v2/downloads/')) {
-        var card = document.createElement('div')
-        var body = document.createElement('div')
-        var name = document.createElement('h5')
-        var text = document.createElement('p')
-        var avatar = document.createElement('img')
-        card.className = 'card m-2 bg-secondary'
+        let card = document.createElement('div')
+        let body = document.createElement('div')
+        let text = document.createElement('p')
+        card.className = 'card m-2 bg-secondary agent-card'
         body.className = 'card-body'
-        name.className = 'card-title'
         text.className = 'card-text'
         avatar.src = image
         avatar.style = 'width:20px'
-        name.appendChild(avatar)
-        name.innerHTML += from
         text.innerHTML = message //marked(body) //enables markdown support
-        body.appendChild(name)
         body.appendChild(text)
         card.appendChild(body)
         document.getElementById('messages').appendChild(card)

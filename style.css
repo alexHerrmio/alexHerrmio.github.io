@@ -1,3 +1,17 @@
+.customer-card, .agent-card {
+  width: fit-content !important;
+}
+
+.customer-card {
+  margin-left: auto !important;
+  border-radius: 10px 0 10px 10px;
+}
+
+.agent-card {
+  margin-right: auto !important;
+  border-radius: 0 10px 10px 10px;
+}
+
 .typingIndicatorContainer {
   display: flex;
   flex: none;

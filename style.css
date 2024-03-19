@@ -1,3 +1,11 @@
+#messages.container {
+  padding: 0 !important;
+}
+
+.card-body {
+  padding: 0.7rem !important;
+}
+
 .customer-card, .agent-card {
   width: fit-content !important;
 }
@@ -8,6 +16,7 @@
 }
 
 .agent-card {
+  background: rgb(229, 229, 229);
   margin-right: auto !important;
   border-radius: 0 10px 10px 10px;
 }

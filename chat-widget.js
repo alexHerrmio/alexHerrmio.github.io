@@ -320,7 +320,7 @@ function createCustomerMsg(message) {
     }
 }
 
-function createAgentMsg(from, message, image) {
+function createAgentMsg(message) {
     //Build out HTML Elements for agent
     console.log('agent message: ', message)
 
@@ -329,11 +329,9 @@ function createAgentMsg(from, message, image) {
         let card = document.createElement('div')
         let body = document.createElement('div')
         let text = document.createElement('p')
-        card.className = 'card m-2 bg-secondary agent-card'
+        card.className = 'card m-2 agent-card'
         body.className = 'card-body'
         text.className = 'card-text'
-        avatar.src = image
-        avatar.style = 'width:20px'
         text.innerHTML = message //marked(body) //enables markdown support
         body.appendChild(text)
         card.appendChild(body)

@@ -1,12 +1,12 @@
 
 let socket;
-let chatConfigGlobal = {region: "mypurecloud.de", deploymentId: "06b9012f-875d-42bd-820e-7eaac868f4c3"}
-initializeWidget(chatConfigGlobal)
+let chatConfigGlobal
 
 
 async function initializeWidget(chatConfig) {
-    await injectHTML()
+    await injectHTML(chatConfig)
     loadCSS()
+    chatConfigGlobal = chatConfig
 
     socket = new WebSocket('wss://webmessaging.' + chatConfig.region + '/v1?deploymentId=' + chatConfig.deploymentId)
 
@@ -14,7 +14,6 @@ async function initializeWidget(chatConfig) {
         socket.onopen = async function (event) {
             console.log('open')
             if (localStorage.getItem('gc_webtoken')) {
-                document.getElementById('currentToken').innerText = localStorage.getItem('gc_webtoken')
                 let connection = {
                     action: 'configureSession',
                     deploymentId: chatConfig.deploymentId,
@@ -24,7 +23,6 @@ async function initializeWidget(chatConfig) {
             }
             if (!localStorage.getItem('gc_webtoken')) {
                 localStorage.setItem('gc_webtoken', uuidv4())
-                document.getElementById('currentToken').innerText = localStorage.getItem('gc_webtoken')
                 let connection = {
                     action: 'configureSession',
                     deploymentId: chatConfig.deploymentId,
@@ -53,9 +51,7 @@ async function initializeWidget(chatConfig) {
                 }, 60000)
 
                 if (!details.body.newSession && document.getElementById('messages').innerText === '') {
-                    //GET any old messages
-                    console.log('getting old messages...')
-                    document.getElementById('progressbar').style = 'width: 25%'
+                    document.getElementById('progressbar').style.width = '25%'
                     socket.send(
                         JSON.stringify({
                             action: 'getJwt',
@@ -75,7 +71,7 @@ async function initializeWidget(chatConfig) {
                 })
                 let history = await response.json()
                 console.log(history)
-                document.getElementById('progressbar').style = 'width: 75%'
+                document.getElementById('progressbar').style.width = '75%'
 
                 if (history.total > 0) {
                     //go through each message and append it to the widget
@@ -131,18 +127,18 @@ async function initializeWidget(chatConfig) {
                             console.log('Structured message: ', details.body.text)
                         }
                     }
-                    document.getElementById('progressbar').style = 'width: 100%'
+                    document.getElementById('progressbar').style.width = '100%'
                     setTimeout(function () {
-                        document.getElementById('progressbar').style = 'width: 0%'
+                        document.getElementById('progressbar').style.width = '0'
                         document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
                     }, 2000)
                 }
 
                 if (history.total === 0) {
                     console.log('no existing messages for token: ', localStorage.getItem('gc_webtoken'))
-                    document.getElementById('progressbar').style = 'width: 100%'
+                    document.getElementById('progressbar').style.width = '100%'
                     setTimeout(function () {
-                        document.getElementById('progressbar').style = 'width: 0%'
+                        document.getElementById('progressbar').style.width = '0%'
                         document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
                     }, 2000)
                 }
@@ -247,7 +243,7 @@ async function initializeWidget(chatConfig) {
     })
 }
 
-async function injectHTML() {
+async function injectHTML(chatConfig) {
     let sourceDiv = document.createElement('div');
     sourceDiv.id = 'parloa-chat-widget'
     await fetch("injectable.html")
@@ -263,8 +259,20 @@ async function injectHTML() {
         .catch(error => {
             console.error('Error when loading injectable: ', error);
         });
-    console.log('done');
     document.body.appendChild(sourceDiv)
+
+    //Styling
+    document.getElementsByClassName('toast-header')[0].style.setProperty("background", chatConfig.headerBgColor, "important");
+    document.getElementsByClassName('toast-header')[0].style.color = chatConfig.headerTextColor
+    document.querySelector('.toast-header svg').style.fill = chatConfig.headerTextColor
+
+    document.querySelector('#chatButton button').style.background = chatConfig.customerCardBgColor
+    document.querySelector('#chatButton button svg').style.fill = chatConfig.customerCardTextColor
+
+    document.querySelector('.toast-body button').style.background = chatConfig.customerCardBgColor
+    document.querySelector('.toast-body button svg').style.fill = chatConfig.customerCardTextColor
+
+    document.getElementById('progressbar').style.backgroundColor = chatConfig.progressBarColor
 }
 
 
@@ -300,44 +308,45 @@ function closeChat() {
 }
 
 function createCustomerMsg(message) {
-    //Build out HTML Elements for customer
-    console.log('customer message: ', message)
+    message = message.replace(/<[^>]*>/g, '');
 
+    let card = document.createElement('div')
+    let body = document.createElement('div')
+    let text = document.createElement('p')
 
-    //Text
-    if (!message.startsWith('https://api.' + chatConfigGlobal.region + '/api/v2/downloads/')) {
-        let card = document.createElement('div')
-        let body = document.createElement('div')
-        let text = document.createElement('p')
-        card.className = 'card text-end end-0 m-2 bg-primary customer-card'
-        body.className = 'card-body'
-        text.className = 'card-text text-white'
-        text.innerHTML = message
-        body.appendChild(text)
-        card.appendChild(body)
-        document.getElementById('messages').appendChild(card)
-        document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
-    }
+    card.className = 'card text-end end-0 m-2 customer-card'
+    card.style.background = chatConfigGlobal.customerCardBgColor
+
+    body.className = 'card-body'
+
+    text.className = 'card-text'
+    text.style.color = chatConfigGlobal.customerCardTextColor
+    text.innerHTML = message
+
+    body.appendChild(text)
+    card.appendChild(body)
+    document.getElementById('messages').appendChild(card)
+    document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
 }
 
 function createAgentMsg(message) {
-    //Build out HTML Elements for agent
-    console.log('agent message: ', message)
+    let card = document.createElement('div')
+    let body = document.createElement('div')
+    let text = document.createElement('p')
+    card.className = 'card m-2 agent-card'
+    card.style.background = chatConfigGlobal.agentCardBgColor
 
-    //Text
-    if (!message.startsWith('https://api.' + chatConfigGlobal.region + '/api/v2/downloads/')) {
-        let card = document.createElement('div')
-        let body = document.createElement('div')
-        let text = document.createElement('p')
-        card.className = 'card m-2 agent-card'
-        body.className = 'card-body'
-        text.className = 'card-text'
-        text.innerHTML = message //marked(body) //enables markdown support
-        body.appendChild(text)
-        card.appendChild(body)
-        document.getElementById('messages').appendChild(card)
-        document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
-    }
+
+    body.className = 'card-body'
+
+    text.className = 'card-text'
+    text.style.color = chatConfigGlobal.agentCardTextColor
+    text.innerHTML = message //marked(body) //enables markdown support
+
+    body.appendChild(text)
+    card.appendChild(body)
+    document.getElementById('messages').appendChild(card)
+    document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
 }
 
 function createTypingIndicator() {

@@ -275,7 +275,7 @@ function loadCSS() {
 
     let cssLink = document.createElement("link");
     cssLink.rel = "stylesheet";
-    cssLink.href = "https://alexherrmio.github.io/style.css";
+    cssLink.href = "style.css";
 
     document.head.appendChild(bootstrapLink);
     document.head.appendChild(cssLink);
@@ -292,7 +292,6 @@ function clearToken() {
 function openChat() {
     if (isFirstMessage) {
         wssSend("FIRST_MESSAGE")
-        isFirstMessage = false
     }
     document.getElementById('widget').className = 'toast show'
     document.getElementById('chatButton').className = 'toast hide'
@@ -304,7 +303,7 @@ function closeChat() {
 }
 
 function createCustomerMsg(message) {
-
+    isFirstMessage = false;
     if (message !== 'FIRST_MESSAGE') {
         message = message.replace(/<[^>]*>/g, '');
 

@@ -2,6 +2,10 @@
   padding: 0 !important;
 }
 
+.card {
+  border: none !important;
+}
+
 .card-body {
   padding: 0.7rem !important;
 }

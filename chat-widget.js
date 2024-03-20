@@ -1,6 +1,7 @@
 
 let socket;
 let chatConfigGlobal
+let isFirstMessage = true
 
 
 async function initializeWidget(chatConfig) {
@@ -90,7 +91,7 @@ async function initializeWidget(chatConfig) {
                         }
                         //Receive text message
                         if (message.type === 'Text' && message.direction === 'Outbound' && message.text !== undefined) {
-                            createAgentMsg(name, message.text, image)
+                            createAgentMsg(message.text)
                         }
                         if (message.type === 'Text' && message.direction === 'Inbound' && message.text !== undefined) {
                             createCustomerMsg(message.text)
@@ -98,13 +99,9 @@ async function initializeWidget(chatConfig) {
                         if (message.type === 'Text' && message.direction === 'Inbound' && message.text === undefined) {
                             createCustomerMsg(message.content[0].attachment.url)
                         }
-                        //Receive image message
-                        if (message.type === 'Text' && message.direction === 'Outbound' && message.text === undefined) {
-                            createAgentMsg(name, message.content[0].attachment.url, image)
-                        }
                         //RichMedia Message QuickReply
                         if (message.type === 'Structured' && message.direction === 'Outbound') {
-                            createAgentMsg(name, message.text, image)
+                            createAgentMsg(message.text)
                             let card = document.createElement('div')
                             let body = document.createElement('div')
                             card.className = 'card m-2 border-light'
@@ -164,17 +161,12 @@ async function initializeWidget(chatConfig) {
                 }
                 //Receive text message
                 if (details.body.type === 'Text' && details.body.direction === 'Outbound' && details.body.text !== undefined) {
-                    createAgentMsg(name, details.body.text, image)
+                    createAgentMsg(details.body.text)
                     console.log('Text message: ', details.body.text)
                 }
                 if (details.body.type === 'Text' && details.body.direction === 'Inbound' && details.body.text !== undefined) {
                     createCustomerMsg(details.body.text)
                     console.log('Text message: ', details.body.text)
-                }
-                //Receive image message
-                if (details.body.type === 'Text' && details.body.direction === 'Outbound' && details.body.text === undefined) {
-                    createAgentMsg(name, details.body.content[0].attachment.url, image)
-                    console.log('Text message: ', details.body.content[0].attachment.url)
                 }
                 if (details.body.type === 'Text' && details.body.direction === 'Inbound' && details.body.text === undefined) {
                     createCustomerMsg(details.body.content[0].attachment.url)
@@ -182,7 +174,7 @@ async function initializeWidget(chatConfig) {
                 }
                 //RichMedia Message QuickReply
                 if (details.body.type === 'Structured' && details.body.direction === 'Outbound') {
-                    createAgentMsg(name, details.body.text, image)
+                    createAgentMsg(details.body.text)
                     let card = document.createElement('div')
                     let body = document.createElement('div')
                     card.className = 'card m-2 border-light'
@@ -298,6 +290,10 @@ function clearToken() {
 }
 
 function openChat() {
+    if (isFirstMessage) {
+        wssSend("FIRST_MESSAGE")
+        isFirstMessage = false
+    }
     document.getElementById('widget').className = 'toast show'
     document.getElementById('chatButton').className = 'toast hide'
     document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
@@ -308,28 +304,32 @@ function closeChat() {
 }
 
 function createCustomerMsg(message) {
-    message = message.replace(/<[^>]*>/g, '');
 
-    let card = document.createElement('div')
-    let body = document.createElement('div')
-    let text = document.createElement('p')
+    if (message !== 'FIRST_MESSAGE') {
+        message = message.replace(/<[^>]*>/g, '');
 
-    card.className = 'card text-end end-0 m-2 customer-card'
-    card.style.background = chatConfigGlobal.customerCardBgColor
+        let card = document.createElement('div')
+        let body = document.createElement('div')
+        let text = document.createElement('p')
 
-    body.className = 'card-body'
+        card.className = 'card text-end end-0 m-2 customer-card'
+        card.style.background = chatConfigGlobal.customerCardBgColor
 
-    text.className = 'card-text'
-    text.style.color = chatConfigGlobal.customerCardTextColor
-    text.innerHTML = message
+        body.className = 'card-body'
 
-    body.appendChild(text)
-    card.appendChild(body)
-    document.getElementById('messages').appendChild(card)
-    document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
+        text.className = 'card-text'
+        text.style.color = chatConfigGlobal.customerCardTextColor
+        text.innerHTML = message
+
+        body.appendChild(text)
+        card.appendChild(body)
+        document.getElementById('messages').appendChild(card)
+        document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
+    }
 }
 
 function createAgentMsg(message) {
+    console.log('Agent Message:' + message);
     let card = document.createElement('div')
     let body = document.createElement('div')
     let text = document.createElement('p')

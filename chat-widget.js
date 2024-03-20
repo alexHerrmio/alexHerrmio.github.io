@@ -13,7 +13,6 @@ async function initializeWidget(chatConfig) {
 
     try {
         socket.onopen = async function (event) {
-            console.log('open')
             if (localStorage.getItem('gc_webtoken')) {
                 let connection = {
                     action: 'configureSession',
@@ -34,12 +33,11 @@ async function initializeWidget(chatConfig) {
         }
 
         socket.onmessage = async function (event) {
+            console.log(event);
             let details = JSON.parse(event.data)
             if (details.type !== 'response' && details.body.text !== 'ping') console.log(details)
 
             if (details.body.connected) {
-                console.log('wss connected ok')
-
                 setInterval(function () {
                     let heart = {
                         action: 'echo',
@@ -71,24 +69,11 @@ async function initializeWidget(chatConfig) {
                     },
                 })
                 let history = await response.json()
-                console.log(history)
                 document.getElementById('progressbar').style.width = '75%'
 
                 if (history.total > 0) {
                     //go through each message and append it to the widget
                     for (const message of history.entities.reverse()) {
-                        let name = ''
-                        if (message.channel?.from?.nickname) {
-                            name = message.channel.from.nickname
-                        } else {
-                            name = message.originatingEntity
-                        }
-                        let image = ''
-                        if (message.channel?.from?.image) {
-                            image = message.channel.from.image
-                        } else {
-                            image = ''
-                        }
                         //Receive text message
                         if (message.type === 'Text' && message.direction === 'Outbound' && message.text !== undefined) {
                             createAgentMsg(message.text)
@@ -121,7 +106,6 @@ async function initializeWidget(chatConfig) {
                             }
                             document.getElementById('messages').appendChild(card)
                             document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
-                            console.log('Structured message: ', details.body.text)
                         }
                     }
                     document.getElementById('progressbar').style.width = '100%'
@@ -132,7 +116,6 @@ async function initializeWidget(chatConfig) {
                 }
 
                 if (history.total === 0) {
-                    console.log('no existing messages for token: ', localStorage.getItem('gc_webtoken'))
                     document.getElementById('progressbar').style.width = '100%'
                     setTimeout(function () {
                         document.getElementById('progressbar').style.width = '0%'
@@ -143,34 +126,15 @@ async function initializeWidget(chatConfig) {
 
 
             if (details.type === 'message') {
-                //remove typing indicator if still active
-                if (document.getElementById('typing')) {
-                    document.getElementById('typing').remove()
-                }
-                let name = ''
-                if (details.body.channel?.from?.nickname) {
-                    name = details.body.channel.from.nickname
-                } else {
-                    name = details.body.originatingEntity
-                }
-                let image = ''
-                if (details.body.channel?.from?.image) {
-                    image = details.body.channel.from.image
-                } else {
-                    image = ''
-                }
+                console.log(details.body.text);
+
                 //Receive text message
                 if (details.body.type === 'Text' && details.body.direction === 'Outbound' && details.body.text !== undefined) {
                     createAgentMsg(details.body.text)
-                    console.log('Text message: ', details.body.text)
                 }
                 if (details.body.type === 'Text' && details.body.direction === 'Inbound' && details.body.text !== undefined) {
                     createCustomerMsg(details.body.text)
-                    console.log('Text message: ', details.body.text)
-                }
-                if (details.body.type === 'Text' && details.body.direction === 'Inbound' && details.body.text === undefined) {
-                    createCustomerMsg(details.body.content[0].attachment.url)
-                    console.log('Text message: ', details.body.content[0].attachment.url)
+                    createTypingIndicator()
                 }
                 //RichMedia Message QuickReply
                 if (details.body.type === 'Structured' && details.body.direction === 'Outbound') {
@@ -194,17 +158,8 @@ async function initializeWidget(chatConfig) {
                     }
                     document.getElementById('messages').appendChild(card)
                     document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
-                    console.log('Structured message: ', details.body.text)
                 }
-                //typing indicator
-                if (details.body.type === 'Event' && details.body.events[0].eventType === 'Typing' && details.body.direction === 'Outbound') {
-                    createTypingIndicator()
-                    setTimeout(() => {
-                        if (document.getElementById('typing')) {
-                            document.getElementById('typing').remove()
-                        }
-                    }, 5000)
-                }
+
                 if (document.getElementById('widget').className === 'toast hide') {
                     openChat()
                 }
@@ -216,21 +171,10 @@ async function initializeWidget(chatConfig) {
 
 //Capture Enter key to send message
     let enter = document.getElementById('message')
-    console.log('try to add  event');
     enter.addEventListener('keyup', function (event) {
         // Number 13 is the "Enter" key on the keyboard
         if (event.key === 'Enter') {
-            // Trigger the button element with a click
             document.getElementById('sendButton').click()
-        }
-        if (event.key!== 'Enter') {
-            if(!typing){
-                typing = true
-                wssSendTyping()
-                setTimeout(() => {
-                    typing = false
-                }, 5000);
-            }
         }
     })
 }
@@ -328,7 +272,9 @@ function createCustomerMsg(message) {
 }
 
 function createAgentMsg(message) {
-    console.log('Agent Message:' + message);
+    if(document.getElementById('typing')) {
+        document.getElementById('typing').remove()
+    }
     let card = document.createElement('div')
     let body = document.createElement('div')
     let text = document.createElement('p')
@@ -387,32 +333,13 @@ async function wssSend(message) {
     if (!localStorage.getItem('gc_webtoken')) {
         console.error('No gc_webtoken how did you even get here??')
     }
-}
 
-async function wssSendTyping() {
-    let json = {
-        action: 'onMessage',
-        token: localStorage.getItem('gc_webtoken'),
-        message: {
-            type: 'Event',
-            events: [
-                {
-                    eventType: 'Typing',
-                    typing: {
-                        type: 'On',
-                    },
-                },
-            ],
-        },
-    }
-    socket.send(JSON.stringify(json))
 }
-
 //JavaScript Native way to generate uuidv4
 function uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         let r = (Math.random() * 16) | 0,
-            v = c == 'x' ? r : (r & 0x3) | 0x8
+            v = c === 'x' ? r : (r & 0x3) | 0x8
         return v.toString(16)
     })
 }

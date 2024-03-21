@@ -12,7 +12,7 @@ async function initializeWidget(chatConfig) {
     socket = new WebSocket('wss://webmessaging.' + chatConfig.region + '/v1?deploymentId=' + chatConfig.deploymentId)
 
     try {
-        socket.onopen = async function (event) {
+        socket.onopen = async function() {
             if (localStorage.getItem('gc_webtoken')) {
                 let connection = {
                     action: 'configureSession',
@@ -134,7 +134,6 @@ async function initializeWidget(chatConfig) {
                 }
                 if (details.body.type === 'Text' && details.body.direction === 'Inbound' && details.body.text !== undefined) {
                     createCustomerMsg(details.body.text)
-                    createTypingIndicator()
                 }
                 //RichMedia Message QuickReply
                 if (details.body.type === 'Structured' && details.body.direction === 'Outbound') {
@@ -205,8 +204,11 @@ async function injectHTML(chatConfig) {
     document.querySelector('#chatButton button').style.background = chatConfig.customerCardBgColor
     document.querySelector('#chatButton button svg').style.fill = chatConfig.customerCardTextColor
 
-    document.querySelector('.toast-body button').style.background = chatConfig.customerCardBgColor
-    document.querySelector('.toast-body button svg').style.fill = chatConfig.customerCardTextColor
+    document.querySelector('.toast-body #resetConversation').style.background = chatConfig.customerCardBgColor
+    document.querySelector('.toast-body #resetConversation svg').style.fill = chatConfig.customerCardTextColor
+
+    document.querySelector('.toast-body #sendButton').style.background = chatConfig.customerCardBgColor
+    document.querySelector('.toast-body #sendButton svg').style.fill = chatConfig.customerCardTextColor
 
     document.getElementById('progressbar').style.backgroundColor = chatConfig.progressBarColor
 }
@@ -269,6 +271,7 @@ function createCustomerMsg(message) {
         document.getElementById('messages').appendChild(card)
         document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
     }
+    createTypingIndicator()
 }
 
 function createAgentMsg(message) {
@@ -302,12 +305,15 @@ function createTypingIndicator() {
 
     typing.id = 'typing'
     typing.className = 'typingIndicatorBubble'
+
     div1.className = 'typingIndicatorBubbleDot'
     div2.className = 'typingIndicatorBubbleDot'
     div3.className = 'typingIndicatorBubbleDot'
+
     typing.appendChild(div1)
     typing.appendChild(div2)
     typing.appendChild(div3)
+
     document.getElementById('messages').appendChild(typing)
     document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
 }

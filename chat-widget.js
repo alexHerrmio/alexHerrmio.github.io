@@ -61,6 +61,7 @@ async function initializeWidget(chatConfig) {
             }
 
             if (details.class === 'JwtResponse') {
+
                 //GETTING old messages
                 let response = await fetch('https://api.' + chatConfig.region + '/api/v2/webmessaging/messages?pageNumber=1', {
                     headers: {
@@ -70,10 +71,12 @@ async function initializeWidget(chatConfig) {
                 })
                 let history = await response.json()
                 document.getElementById('progressbar').style.width = '75%'
+                localStorage.setItem('gc_existing_conversation', 'true')
 
                 if (history.total > 0) {
                     //go through each message and append it to the widget
                     for (const message of history.entities.reverse()) {
+
                         //Receive text message
                         if (message.type === 'Text' && message.direction === 'Outbound' && message.text !== undefined) {
                             createAgentMsg(message.text)
@@ -127,7 +130,6 @@ async function initializeWidget(chatConfig) {
 
             if (details.type === 'message') {
                 console.log(details.body.text);
-
                 //Receive text message
                 if (details.body.type === 'Text' && details.body.direction === 'Outbound' && details.body.text !== undefined) {
                     createAgentMsg(details.body.text)
@@ -232,11 +234,12 @@ let typing = false
 
 function clearToken() {
     localStorage.removeItem('gc_webtoken')
+    localStorage.removeItem('gc_existing_conversation')
     window.location.reload()
 }
 
 function openChat() {
-    if (isFirstMessage) {
+    if (isFirstMessage && !Boolean(localStorage.getItem('gc_existing_conversation'))) {
         wssSend("FIRST_MESSAGE")
     }
     document.getElementById('widget').className = 'toast show'

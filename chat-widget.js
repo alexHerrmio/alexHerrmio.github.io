@@ -33,10 +33,9 @@ async function initializeWidget(chatConfig) {
         }
 
         socket.onmessage = async function (event) {
-            console.log(event);
             let details = JSON.parse(event.data)
-            if (details.type !== 'response' && details.body.text !== 'ping') console.log(details)
-
+            // if (details.type !== 'response' && details.body.text !== 'ping') console.log(details)
+            console.log(details);
             if (details.body.connected) {
                 setInterval(function () {
                     let heart = {
@@ -96,13 +95,8 @@ async function initializeWidget(chatConfig) {
                             card.id = 'quickReplies'
                             for (const quick of message.content) {
                                 if (quick.contentType === 'QuickReply') {
-                                    let button = document.createElement('button')
                                     body.className = 'card-body'
-                                    button.className = 'm-1 btn btn-outline-secondary btn-sm'
-                                    button.innerHTML = quick.quickReply.text
-                                    button.onclick = function () {
-                                        wssSend(quick.quickReply.text)
-                                    }
+                                    let button = createQuickreplyButton(quick)
                                     body.appendChild(button)
                                     card.appendChild(body)
                                 }
@@ -129,31 +123,33 @@ async function initializeWidget(chatConfig) {
 
 
             if (details.type === 'message') {
-                console.log(details.body.text);
                 //Receive text message
                 if (details.body.type === 'Text' && details.body.direction === 'Outbound' && details.body.text !== undefined) {
                     createAgentMsg(details.body.text)
                 }
                 if (details.body.type === 'Text' && details.body.direction === 'Inbound' && details.body.text !== undefined) {
                     createCustomerMsg(details.body.text)
+                    setTimeout(() => {
+                        if(document.getElementById('typing')) {
+                            createAgentMsg('TIMEOUT')
+                        }
+                    }, chatConfigGlobal.timeoutInSeconds * 1000)
                 }
                 //RichMedia Message QuickReply
                 if (details.body.type === 'Structured' && details.body.direction === 'Outbound') {
                     createAgentMsg(details.body.text)
                     let card = document.createElement('div')
                     let body = document.createElement('div')
-                    card.className = 'card m-2 border-light'
+                    card.className = 'card m-2'
                     card.id = 'quickReplies'
                     for (const quick of details.body.content) {
                         if (quick.contentType === 'QuickReply') {
-                            let button = document.createElement('button')
                             body.className = 'card-body'
-                            button.className = 'm-1 btn btn-outline-secondary btn-sm'
-                            button.innerHTML = quick.quickReply.text
-                            button.onclick = function () {
-                                wssSend(quick.quickReply.text)
-                            }
-                            body.appendChild(button)
+                            let buttonHTML = createQuickreplyButton(quick)
+
+                            buttonHTML.className = 'm-1 btn btn-sm test'
+
+                            body.appendChild(buttonHTML)
                             card.appendChild(body)
                         }
                     }
@@ -217,16 +213,16 @@ async function injectHTML(chatConfig) {
 
 
 function loadCSS() {
-    let bootstrapLink = document.createElement("link");
-    bootstrapLink.rel = "stylesheet";
-    bootstrapLink.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css";
+    addStylesheet("https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css");
+    addStylesheet("style.css");
 
-    let cssLink = document.createElement("link");
-    cssLink.rel = "stylesheet";
-    cssLink.href = "style.css";
+    function addStylesheet(link) {
+        let stylesheetLink = document.createElement("link");
+        stylesheetLink.rel = "stylesheet";
+        stylesheetLink.href = link;
 
-    document.head.appendChild(bootstrapLink);
-    document.head.appendChild(cssLink);
+        document.head.appendChild(stylesheetLink);
+    }
 
 }
 
@@ -275,6 +271,7 @@ function createCustomerMsg(message) {
         document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
     }
     createTypingIndicator()
+
 }
 
 function createAgentMsg(message) {
@@ -343,6 +340,32 @@ async function wssSend(message) {
         console.error('No gc_webtoken how did you even get here??')
     }
 
+}
+
+function createQuickreplyButton(quick) {
+    let buttonHTML = document.createElement('button')
+    buttonHTML.className = 'm-1 btn btn-sm test'
+
+    buttonHTML.style.setProperty("color", chatConfigGlobal.customerCardBgColor);
+    buttonHTML.style.setProperty("border-color", chatConfigGlobal.customerCardBgColor);
+
+    buttonHTML.addEventListener('mouseover', function() {
+        buttonHTML.style.background = chatConfigGlobal.customerCardBgColor;
+        buttonHTML.style.color = 'white';
+
+    });
+
+    buttonHTML.addEventListener('mouseout', function() {
+        buttonHTML.style.background = 'none';
+        buttonHTML.style.setProperty("color", chatConfigGlobal.customerCardBgColor);
+    });
+
+    buttonHTML.innerHTML = quick.quickReply.text
+    buttonHTML.onclick = function () {
+        wssSend(quick.quickReply.text)
+    }
+
+    return buttonHTML
 }
 //JavaScript Native way to generate uuidv4
 function uuidv4() {

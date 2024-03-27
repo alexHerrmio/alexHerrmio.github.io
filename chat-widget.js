@@ -306,9 +306,13 @@ function createTypingIndicator() {
     typing.id = 'typing'
     typing.className = 'typingIndicatorBubble'
 
+    typing.style.backgroundColor = chatConfigGlobal.agentCardBgColor
+
     div1.className = 'typingIndicatorBubbleDot'
     div2.className = 'typingIndicatorBubbleDot'
     div3.className = 'typingIndicatorBubbleDot'
+
+    Array(div1, div2, div3).forEach(dot => dot.style.backgroundColor = chatConfigGlobal.agentCardTextColor )
 
     typing.appendChild(div1)
     typing.appendChild(div2)

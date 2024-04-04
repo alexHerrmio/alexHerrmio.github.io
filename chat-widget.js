@@ -70,9 +70,10 @@ async function initializeWidget(chatConfig) {
                 })
                 let history = await response.json()
                 document.getElementById('progressbar').style.width = '75%'
-                localStorage.setItem('gc_existing_conversation', 'true')
+
 
                 if (history.total > 0) {
+                    localStorage.setItem('gc_existing_conversation', 'true')
                     //go through each message and append it to the widget
                     for (const message of history.entities.reverse()) {
 

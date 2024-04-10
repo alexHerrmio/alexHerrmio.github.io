@@ -126,7 +126,12 @@ async function initializeWidget(chatConfig) {
             if (details.type === 'message') {
                 //Receive text message
                 if (details.body.type === 'Text' && details.body.direction === 'Outbound' && details.body.text !== undefined) {
-                    createAgentMsg(details.body.text)
+                    if(details.body.text !== "cbb59259081253d28cd") {
+                        createAgentMsg(details.body.text)
+                    } else {
+                        console.log('end convo');
+                    }
+
                 }
                 if (details.body.type === 'Text' && details.body.direction === 'Inbound' && details.body.text !== undefined) {
                     createCustomerMsg(details.body.text)

@@ -42,7 +42,7 @@
   justify-content: center;
   width: 52px;
   height: 40px;
-  margin: 0px 8px;
+  margin: 0 8px;
   border-radius: 12px;
 }
 
@@ -58,7 +58,7 @@
 }
 
 .typingIndicatorBubbleDot:first-of-type {
-  margin: 0px 4px;
+  margin: 0 4px;
 }
 
 .typingIndicatorBubbleDot:nth-of-type(2) {
@@ -78,4 +78,26 @@
   30% {
     transform: translateY(-4px);
   }
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #c8ccd0
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.separator:not(:empty)::before {
+  margin-right: .25em;
+}
+
+.separator:not(:empty)::after {
+  margin-left: .25em;
 }

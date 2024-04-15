@@ -126,12 +126,7 @@ async function initializeWidget(chatConfig) {
             if (details.type === 'message') {
                 //Receive text message
                 if (details.body.type === 'Text' && details.body.direction === 'Outbound' && details.body.text !== undefined) {
-                    if(details.body.text !== "cbb59259081253d28cd") {
-                        createAgentMsg(details.body.text)
-                    } else {
-                        console.log('end convo');
-                    }
-
+                    createAgentMsg(details.body.text)
                 }
                 if (details.body.type === 'Text' && details.body.direction === 'Inbound' && details.body.text !== undefined) {
                     createCustomerMsg(details.body.text)
@@ -284,23 +279,33 @@ function createAgentMsg(message) {
     if(document.getElementById('typing')) {
         document.getElementById('typing').remove()
     }
-    let card = document.createElement('div')
-    let body = document.createElement('div')
-    let text = document.createElement('p')
-    card.className = 'card m-2 agent-card'
-    card.style.background = chatConfigGlobal.agentCardBgColor
+    if(message !== 'cbb59259081253d28cd') {
+        let card = document.createElement('div')
+        let body = document.createElement('div')
+        let text = document.createElement('p')
+        card.className = 'card m-2 agent-card'
+        card.style.background = chatConfigGlobal.agentCardBgColor
 
 
-    body.className = 'card-body'
+        body.className = 'card-body'
 
-    text.className = 'card-text'
-    text.style.color = chatConfigGlobal.agentCardTextColor
-    text.innerHTML = message //marked(body) //enables markdown support
+        text.className = 'card-text'
+        text.style.color = chatConfigGlobal.agentCardTextColor
+        text.innerHTML = message //marked(body) //enables markdown support
 
-    body.appendChild(text)
-    card.appendChild(body)
-    document.getElementById('messages').appendChild(card)
+        body.appendChild(text)
+        card.appendChild(body)
+        document.getElementById('messages').appendChild(card)
+
+    } else {
+        let seperator = document.createElement('div')
+        seperator.className = "separator"
+        seperator.innerText = "Chat ended"
+        document.getElementById('messages').appendChild(seperator)
+    }
+
     document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
+
 }
 
 function createTypingIndicator() {

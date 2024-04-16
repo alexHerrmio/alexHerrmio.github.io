@@ -2,6 +2,10 @@
   padding: 0 !important;
 }
 
+.toast-header {
+  padding: .2rem .75rem !important;
+}
+
 .btn-primary {
   border: none !important;
 }

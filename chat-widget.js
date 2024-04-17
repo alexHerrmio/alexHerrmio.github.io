@@ -180,7 +180,7 @@ async function initializeWidget(chatConfig) {
 async function injectHTML(chatConfig) {
     let sourceDiv = document.createElement('div');
     sourceDiv.id = 'parloa-chat-widget'
-    await fetch("https://genesyswidget.blob.core.windows.net/$web/injectable.html?sp=r&st=2024-04-17T08:16:32Z&se=2024-04-17T16:16:32Z&spr=https&sv=2022-11-02&sr=b&sig=kcMi%2FUhYFkRf2wxe99QK%2FmhvSzaOBZD0dT9HpPSR9Lg%3D", {mode: 'no-cors'})
+    await fetch("https://genesyswidget.blob.core.windows.net/$web/injectable.min.html?sp=r&st=2024-04-17T13:27:38Z&se=2024-05-26T21:27:38Z&spr=https&sv=2022-11-02&sr=b&sig=rue5%2F1K9CHy9FSU8Gk6bwfKObT5uWXH6DOq8fpkyCW4%3D")
         .then(response => {
             if (!response.ok) {
                 throw new Error('Injectable could not been loaded');
@@ -215,7 +215,7 @@ async function injectHTML(chatConfig) {
 
 function loadCSS() {
     addStylesheet("https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css");
-    addStylesheet("https://genesyswidget.blob.core.windows.net/$web/style.css?sp=r&st=2024-04-17T08:14:00Z&se=2024-04-18T16:14:00Z&spr=https&sv=2022-11-02&sr=b&sig=hcJO1khAFamErzJpOrFj36nPFotaxMatt4%2FvnDwcB58%3D");
+    addStylesheet("https://genesyswidget.blob.core.windows.net/$web/style.min.css?sp=r&st=2024-04-17T13:27:58Z&se=2024-05-26T21:27:58Z&spr=https&sv=2022-11-02&sr=b&sig=q9jMBBxc4hUf5046ketu8dcadVO6fhu9x21Do3e8Wq8%3D");
 
     function addStylesheet(link) {
         let stylesheetLink = document.createElement("link");

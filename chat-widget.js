@@ -180,7 +180,7 @@ async function initializeWidget(chatConfig) {
 async function injectHTML(chatConfig) {
     let sourceDiv = document.createElement('div');
     sourceDiv.id = 'parloa-chat-widget'
-    await fetch("https://genesyswidget.blob.core.windows.net/$web/injectable.html?sp=r&st=2024-04-17T08:16:32Z&se=2024-04-17T16:16:32Z&spr=https&sv=2022-11-02&sr=b&sig=kcMi%2FUhYFkRf2wxe99QK%2FmhvSzaOBZD0dT9HpPSR9Lg%3D")
+    await fetch("https://genesyswidget.blob.core.windows.net/$web/injectable.html?sp=r&st=2024-04-17T08:16:32Z&se=2024-04-17T16:16:32Z&spr=https&sv=2022-11-02&sr=b&sig=kcMi%2FUhYFkRf2wxe99QK%2FmhvSzaOBZD0dT9HpPSR9Lg%3D", {mode: 'no-cors'})
         .then(response => {
             if (!response.ok) {
                 throw new Error('Injectable could not been loaded');

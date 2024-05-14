@@ -83,6 +83,7 @@ async function initializeWidget(chatConfig) {
                         }
                         if (message.type === 'Text' && message.direction === 'Inbound' && message.text !== undefined) {
                             createCustomerMsg(message.text)
+                            await timeout()
                         }
                         if (message.type === 'Text' && message.direction === 'Inbound' && message.text === undefined) {
                             createCustomerMsg(message.content[0].attachment.url)
@@ -127,14 +128,13 @@ async function initializeWidget(chatConfig) {
                 //Receive text message
                 if (details.body.type === 'Text' && details.body.direction === 'Outbound' && details.body.text !== undefined) {
                     createAgentMsg(details.body.text)
+                    console.log('AGENT')
+
                 }
                 if (details.body.type === 'Text' && details.body.direction === 'Inbound' && details.body.text !== undefined) {
                     createCustomerMsg(details.body.text)
-                    setTimeout(() => {
-                        if(document.getElementById('typing')) {
-                            createAgentMsg('TIMEOUT')
-                        }
-                    }, chatConfigGlobal.timeoutInSeconds * 1000)
+                    await timeout()
+
                 }
                 //RichMedia Message QuickReply
                 if (details.body.type === 'Structured' && details.body.direction === 'Outbound') {
@@ -180,7 +180,7 @@ async function initializeWidget(chatConfig) {
 async function injectHTML(chatConfig) {
     let sourceDiv = document.createElement('div');
     sourceDiv.id = 'parloa-chat-widget'
-    await fetch("https://genesyswidget.blob.core.windows.net/$web/injectable.min.html?sp=r&st=2024-04-17T13:27:38Z&se=2024-05-26T21:27:38Z&spr=https&sv=2022-11-02&sr=b&sig=rue5%2F1K9CHy9FSU8Gk6bwfKObT5uWXH6DOq8fpkyCW4%3D")
+    await fetch("injectable.html")
         .then(response => {
             if (!response.ok) {
                 throw new Error('Injectable could not been loaded');
@@ -210,12 +210,17 @@ async function injectHTML(chatConfig) {
     document.querySelector('.toast-body #sendButton svg').style.fill = chatConfig.customerCardTextColor
 
     document.getElementById('progressbar').style.backgroundColor = chatConfig.progressBarColor
+
+    document.querySelector('.toast-header h3').innerHTML = chatConfig.title
+    document.getElementById('alert').style.color = chatConfig.errorTextColor
+    document.getElementById('alert').style.background = chatConfig.errorBackgroundColor
+
 }
 
 
 function loadCSS() {
     addStylesheet("https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css");
-    addStylesheet("https://genesyswidget.blob.core.windows.net/$web/style.min.css?sp=r&st=2024-04-17T13:27:58Z&se=2024-05-26T21:27:58Z&spr=https&sv=2022-11-02&sr=b&sig=q9jMBBxc4hUf5046ketu8dcadVO6fhu9x21Do3e8Wq8%3D");
+    addStylesheet("style.css");
 
     function addStylesheet(link) {
         let stylesheetLink = document.createElement("link");
@@ -271,7 +276,10 @@ function createCustomerMsg(message) {
         document.getElementById('messages').appendChild(card)
         document.getElementById('messages').scrollTo(0, document.getElementById('messages').scrollHeight)
     }
-    createTypingIndicator()
+    if(!document.getElementById('typing')) {
+        createTypingIndicator()
+    }
+
 
 }
 
@@ -381,6 +389,19 @@ function createQuickreplyButton(quick) {
     }
 
     return buttonHTML
+}
+
+async function timeout() {
+    setTimeout(() => {
+        if(document.getElementById('typing')) {
+            document.getElementById('typing').remove()
+            document.getElementById('alert').classList.add('errorFade')
+            setTimeout(() => {
+                document.getElementById('alert').classList.remove('errorFade')
+            }, 3000)
+
+        }
+    }, chatConfigGlobal.timeoutInSeconds * 1000)
 }
 //JavaScript Native way to generate uuidv4
 function uuidv4() {

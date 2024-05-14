@@ -6,6 +6,10 @@
   padding: .2rem .75rem !important;
 }
 
+.toast-body {
+  position: relative;
+}
+
 .btn-primary {
   border: none !important;
 }
@@ -104,4 +108,22 @@
 
 .separator:not(:empty)::after {
   margin-left: .25em;
+}
+
+.alert {
+  padding: 0.5rem;
+  z-index: 100;
+  position: absolute;
+  width: 93%;
+  text-align: center;
+  transition: opacity 1s;
+}
+.alert-custom {
+  color: #084298;
+  background-color: #cfe2ff;
+  opacity: 0;
+}
+
+.errorFade {
+  opacity: 1;
 }

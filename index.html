@@ -1,16 +1,18 @@
 <html lang="en">
     <head>
         <title>Test page</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
 
     <body>
-    <script src="https://genesyswidget.blob.core.windows.net/$web/chat-widget.min.js?sp=r&st=2024-04-17T13:28:55Z&se=2024-05-26T21:28:55Z&spr=https&sv=2022-11-02&sr=b&sig=YXVheOoHipsFlUHAUW%2FIxu5peqeV7g7ipMc3wvLvq98%3D"></script>
+    <script src="chat-widget.js"></script>
     <script>
         initializeWidget(
             {
                 region: "mypurecloud.de",
                 deploymentId: "06b9012f-875d-42bd-820e-7eaac868f4c3",
-                timeoutInSeconds: 20,
+                timeoutInSeconds: 3,
+                title: "Parloa Chat",
                 //↓ Styling configuration ↓
                 headerBgColor: "#24132B",
                 headerTextColor: "#fff",
@@ -19,6 +21,8 @@
                 progressBarColor: "#E194F5",
                 agentCardBgColor: "#E194F5",
                 agentCardTextColor: "#000",
+                errorBackgroundColor: "#f8d7da",
+                errorTextColor: "#721c24"
             })
     </script>
     </body>

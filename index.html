@@ -5,13 +5,13 @@
     </head>
 
     <body>
-    <script src="chat-widget.js"></script>
+    <script src="https://genesyswidget.blob.core.windows.net/$web/chat-widget.min.js?sv=2022-11-02&ss=bf&srt=sco&sp=rltfx&se=2024-08-01T16:57:40Z&st=2024-05-14T08:57:40Z&spr=https&sig=nOSy%2Fg76mL49Q6Fkft1K%2FGcEKQS6hO9xpalJ4ki7NU4%3D"></script>
     <script>
         initializeWidget(
             {
                 region: "mypurecloud.de",
                 deploymentId: "06b9012f-875d-42bd-820e-7eaac868f4c3",
-                timeoutInSeconds: 3,
+                timeoutInSeconds: 20,
                 title: "Parloa Chat",
                 //↓ Styling configuration ↓
                 headerBgColor: "#24132B",
@@ -22,7 +22,12 @@
                 agentCardBgColor: "#E194F5",
                 agentCardTextColor: "#000",
                 errorBackgroundColor: "#f8d7da",
-                errorTextColor: "#721c24"
+                errorTextColor: "#721c24",
+                translations: {
+                    timoutMessageText: "Error timeout",
+                    inputPlaceholderText: "yees",
+                    chatEndedText: "Chat something"
+                }
             })
     </script>
     </body>

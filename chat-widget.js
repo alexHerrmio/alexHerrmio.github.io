@@ -180,7 +180,7 @@ async function initializeWidget(chatConfig) {
 async function injectHTML(chatConfig) {
     let sourceDiv = document.createElement('div');
     sourceDiv.id = 'parloa-chat-widget'
-    await fetch("injectable.html")
+    await fetch("https://genesyswidget.blob.core.windows.net/$web/injectable.min.html?sv=2022-11-02&ss=bf&srt=sco&sp=rltfx&se=2024-08-01T16:57:40Z&st=2024-05-14T08:57:40Z&spr=https&sig=nOSy%2Fg76mL49Q6Fkft1K%2FGcEKQS6hO9xpalJ4ki7NU4%3D")
         .then(response => {
             if (!response.ok) {
                 throw new Error('Injectable could not been loaded');
@@ -215,12 +215,16 @@ async function injectHTML(chatConfig) {
     document.getElementById('alert').style.color = chatConfig.errorTextColor
     document.getElementById('alert').style.background = chatConfig.errorBackgroundColor
 
+    //Translations
+    document.querySelector('#message').placeholder =  chatConfig.translations?.inputPlaceholderText || 'Enter message...'
+    document.querySelector('#alert').innerHTML =  chatConfig.translations?.timoutMessageText || 'Message timeout'
+
 }
 
 
 function loadCSS() {
     addStylesheet("https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css");
-    addStylesheet("style.css");
+    addStylesheet("https://genesyswidget.blob.core.windows.net/$web/style.min.css?sv=2022-11-02&ss=bf&srt=sco&sp=rltfx&se=2024-08-01T16:57:40Z&st=2024-05-14T08:57:40Z&spr=https&sig=nOSy%2Fg76mL49Q6Fkft1K%2FGcEKQS6hO9xpalJ4ki7NU4%3D");
 
     function addStylesheet(link) {
         let stylesheetLink = document.createElement("link");
@@ -308,7 +312,7 @@ function createAgentMsg(message) {
     } else {
         let seperator = document.createElement('div')
         seperator.className = "separator"
-        seperator.innerText = "Chat ended"
+        seperator.innerText = chatConfigGlobal.translations?.chatEndedText ||"Chat ended"
         document.getElementById('messages').appendChild(seperator)
     }
 
@@ -342,10 +346,6 @@ function createTypingIndicator() {
 }
 
 async function wssSend(message) {
-    //to stop blank messages being sent
-    if (message === '') {
-        document.getElementById('message').placeholder = 'Please enter a msg...'
-    }
 
     if (message !== '') {
         let json = {
